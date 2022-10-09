@@ -1,15 +1,29 @@
-﻿using System;
+﻿namespace Pmg;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 
-namespace Pmg
-{
-    static class Program
+
+
+
+public static class Program
     {
-        /**
-         * authors baka4n,
-         */
+        [STAThread]
         public static void Main(string[] args)
         {
-            Console.WriteLine("test panda music game!");
+            var nativeWindowSettings = new NativeWindowSettings()
+            {
+                Size = new Vector2i(800, 600),
+                Title = "Panda music game",
+                Flags = ContextFlags.ForwardCompatible
+            };
+
+            using (var game = new Pgm.Game(800, 600, "panda music game"))
+            {
+                Console.WriteLine(game.RenderTime);
+                Console.WriteLine(game.UpdateTime);
+                game.VSync = VSyncMode.On;
+                game.Run();
+            }
         }
     }
-}
