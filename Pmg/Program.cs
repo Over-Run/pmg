@@ -1,10 +1,15 @@
-﻿namespace Pmg
+﻿using System;
+
+namespace Pmg
 {
-    internal class Program
+    static class Program
     {
+        /**
+         * authors baka4n,
+         */
         public static void Main(string[] args)
         {
-            
+            Console.WriteLine("test panda music game!");
         }
     }
 }
