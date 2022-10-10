@@ -3,17 +3,19 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
+
+
 namespace pmg;
 
 public static class PandaMusicGame
 {
-    private static IWindow window;
-    private static GL Gl;
+    private static IWindow? _window;
+    private static GL? _gl;
 
-    private static uint Vbo;
-    private static uint Ebo;
-    private static uint Vao;
-    private static uint Shader;
+    private static uint _vbo;
+    private static uint _ebo;
+    private static uint _vao;
+    private static uint _shader;
 
     private static readonly string VertexShaderSource = @"
         #version 330 core //Using version GLSL version 3.3
@@ -54,105 +56,109 @@ public static class PandaMusicGame
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(800, 600);
         options.Title = "Panda music game";
-        window = Window.Create(options);
+        _window = Window.Create(options);
 
-        window.Load += OnLoad;
-        window.Render += OnRender;
-        window.Update += OnUpdate;
-        window.Closing += OnClose;
+        _window.Load += OnLoad;
+        _window.Render += OnRender;
+        _window.Update += OnUpdate;
+        _window.Closing += OnClose;
 
-        window.Run();
+        _window.Run();
     }
 
 
     private static unsafe void OnLoad()
-    {
-        IInputContext input = window.CreateInput();
-        for (int i = 0; i < input.Keyboards.Count; i++)
-        { 
-            input.Keyboards[i].KeyDown += KeyDown;
+    { 
+        const int uInt = (int)SizeofEnum.UInt;
+        // ReSharper disable once InconsistentNaming
+        const int __float = (int)SizeofEnum.Float;
+        var input = _window?.CreateInput()!;
+        foreach (var t in input.Keyboards)
+        {
+            t.KeyDown += KeyDown;
         }
 
             
-        Gl = GL.GetApi(window);
+        _gl = GL.GetApi(_window);
 
          
-        Vao = Gl.GenVertexArray();
-        Gl.BindVertexArray(Vao);
+        _vao = _gl.GenVertexArray();
+        _gl.BindVertexArray(_vao);
 
-        Vbo = Gl.GenBuffer(); 
-        Gl.BindBuffer(BufferTargetARB.ArrayBuffer, Vbo); 
+        _vbo = _gl.GenBuffer(); 
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo); 
         fixed (void* v = &Vertices[0])
         {
-            Gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (Vertices.Length * sizeof(uint)), v, BufferUsageARB.StaticDraw); //Setting buffer data.
+            
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (Vertices.Length * uInt), v, BufferUsageARB.StaticDraw); //Setting buffer data.
         }
 
             
-        Ebo = Gl.GenBuffer(); 
-        Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, Ebo); 
+        _ebo = _gl.GenBuffer(); 
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo); 
         fixed (void* i = &Indices[0])
         {
-            Gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint) (Indices.Length * sizeof(uint)), i, BufferUsageARB.StaticDraw); //Setting buffer data.
+            _gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint) (Indices.Length * uInt), i, BufferUsageARB.StaticDraw); //Setting buffer data.
         }
 
            
-        uint vertexShader = Gl.CreateShader(ShaderType.VertexShader);
-        Gl.ShaderSource(vertexShader, VertexShaderSource);
-        Gl.CompileShader(vertexShader);
+        var vertexShader = _gl.CreateShader(ShaderType.VertexShader);
+        _gl.ShaderSource(vertexShader, VertexShaderSource);
+        _gl.CompileShader(vertexShader);
 
             
-        string infoLog = Gl.GetShaderInfoLog(vertexShader);
+        var infoLog = _gl.GetShaderInfoLog(vertexShader);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
             Console.WriteLine($"Error compiling vertex shader {infoLog}");
         }
 
             
-        uint fragmentShader = Gl.CreateShader(ShaderType.FragmentShader);
-        Gl.ShaderSource(fragmentShader, FragmentShaderSource);
-        Gl.CompileShader(fragmentShader);
+        var fragmentShader = _gl.CreateShader(ShaderType.FragmentShader);
+        _gl.ShaderSource(fragmentShader, FragmentShaderSource);
+        _gl.CompileShader(fragmentShader);
 
             
-        infoLog = Gl.GetShaderInfoLog(fragmentShader);
+        infoLog = _gl.GetShaderInfoLog(fragmentShader);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
             Console.WriteLine($"Error compiling fragment shader {infoLog}");
         }
 
             
-        Shader = Gl.CreateProgram();
-        Gl.AttachShader(Shader, vertexShader);
-        Gl.AttachShader(Shader, fragmentShader);
-        Gl.LinkProgram(Shader);
+        _shader = _gl.CreateProgram();
+        _gl.AttachShader(_shader, vertexShader);
+        _gl.AttachShader(_shader, fragmentShader);
+        _gl.LinkProgram(_shader);
 
         
-        Gl.GetProgram(Shader, GLEnum.LinkStatus, out var status);
+        _gl.GetProgram(_shader, GLEnum.LinkStatus, out var status);
         if (status == 0)
         {
-            Console.WriteLine($"Error linking shader {Gl.GetProgramInfoLog(Shader)}");
+            Console.WriteLine($"Error linking shader {_gl.GetProgramInfoLog(_shader)}");
         }
 
             
-        Gl.DetachShader(Shader, vertexShader);
-        Gl.DetachShader(Shader, fragmentShader);
-        Gl.DeleteShader(vertexShader);
-        Gl.DeleteShader(fragmentShader);
+        _gl.DetachShader(_shader, vertexShader);
+        _gl.DetachShader(_shader, fragmentShader);
+        _gl.DeleteShader(vertexShader);
+        _gl.DeleteShader(fragmentShader);
 
             
-        Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), null);
-        Gl.EnableVertexAttribArray(0);
+        _gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * __float, null);
+        _gl.EnableVertexAttribArray(0);
     }
 
     private static unsafe void OnRender(double obj) 
     { 
-        Gl.Clear((uint) ClearBufferMask.ColorBufferBit);
+        _gl?.Clear((uint) ClearBufferMask.ColorBufferBit);
 
            
-        Gl.BindVertexArray(Vao);
-        Gl.UseProgram(Shader);
+        _gl?.BindVertexArray(_vao);
+        _gl?.UseProgram(_shader);
 
            
-        Gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length, DrawElementsType.UnsignedInt, null);
+        _gl?.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length, DrawElementsType.UnsignedInt, null);
     }
 
     private static void OnUpdate(double obj)
@@ -163,17 +169,17 @@ public static class PandaMusicGame
     private static void OnClose()
     {
             
-        Gl.DeleteBuffer(Vbo);
-        Gl.DeleteBuffer(Ebo);
-        Gl.DeleteVertexArray(Vao);
-        Gl.DeleteProgram(Shader);
+        _gl?.DeleteBuffer(_vbo);
+        _gl?.DeleteBuffer(_ebo);
+        _gl?.DeleteVertexArray(_vao);
+        _gl?.DeleteProgram(_shader);
     }
 
     private static void KeyDown(IKeyboard arg1, Key arg2, int arg3)
     {
         if (arg2 == Key.Escape)
         {
-            window.Close();
+            _window?.Close();
         }
     }
 }
