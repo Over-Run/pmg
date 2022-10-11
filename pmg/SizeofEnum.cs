@@ -1,4 +1,4 @@
-﻿namespace pmg;
+﻿namespace Pmg;
 
 public enum SizeofEnum
 {

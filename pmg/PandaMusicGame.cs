@@ -2,9 +2,9 @@
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
-using static pmg.StaticField;
+using static Pmg.StaticField;
 
-namespace pmg;
+namespace Pmg;
 
 public static class PandaMusicGame
 {

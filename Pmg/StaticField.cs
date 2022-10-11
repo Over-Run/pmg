@@ -1,7 +1,7 @@
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
-namespace pmg;
+namespace Pmg;
 //用于存放基本的变量参数
 public static class StaticField
 {

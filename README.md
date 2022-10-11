@@ -1,4 +1,4 @@
-# pmg
+# Pmg
 panda music game
 
 - gobal
